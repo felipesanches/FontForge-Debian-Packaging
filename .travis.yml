@@ -1,6 +1,13 @@
 before_install:
-- sudo apt-get install devscripts
+- sudo apt-get install devscripts debhelper libgif-dev libuninameslist-dev libspiro-dev libpango1.0-dev chrpath
 script:
 - apt source fontforge
-- cd fontforge*
-- debuild
+#- cd fontforge*
+#- debuild -us -uc
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: false
+  on:
+    branch: master
