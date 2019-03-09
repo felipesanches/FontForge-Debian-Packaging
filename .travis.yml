@@ -1,0 +1,6 @@
+before_install:
+- sudo apt-get install devscripts
+script:
+- apt source fontforge
+- cd fontforge*
+- debuild
