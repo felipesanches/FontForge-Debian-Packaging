@@ -1,10 +1,40 @@
-before_install:
-- sudo apt-get install devscripts debhelper libgif-dev libuninameslist-dev libspiro-dev libpango1.0-dev chrpath
+language: c
+compiler: gcc
+sudo: false
+dist: xenial
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - deadsnakes
+    packages: [autoconf, automake, autotools-dev, bzip2, gcc-8, g++-8, libtool,libjpeg-dev, libtiff5-dev, libpng12-dev, libfreetype6-dev, libxml2-dev, libpango1.0-dev, libcairo2-dev, python3.7-dev, libbrotli-dev]
+
+install:
+  - export PREFIX=/usr/local
+  - export CC=gcc-8
+  - export CXX=g++-8
+
+    # For some inane reason Travis defines this to '-g -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security'
+    # This prevents pkg-config from setting the CFLAGS properly.
+  - unset PYTHON_CFLAGS
+
+    # These are FF-specific mods (set here so it runs also in Coverity)
+  - export PYTHON=python3.7
+  - export PYTHONPATH=$PYTHONPATH:$PREFIX/lib/python$($PYTHON -c "import sys; print('{0}.{1}'.format(sys.version_info.major, sys.version_info.minor))")/site-packages
+  - export CFLAGS="$CFLAGS -fdiagnostics-color=always -Wall -Wno-switch -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wrestrict -Wnull-dereference -Wjump-misses-init -Wdouble-promotion -Wshadow"
+
 script:
-- apt source fontforge
-- cd fontforge*
-- debuild -us -uc
-- debuild -us -uc
+  - git clone https://github.com/fontforge/fontforge.git
+  - cd fontforge
+  - ./bootstrap
+  - ./configure
+  - make
+  - make check
+  - make install
+  - tar cvzf ../fforge.tar.gz fontforgeexe
+  - tar cvzf ../libs.tar.gz /usr/local/lib/*
+
 deploy:
   provider: pages
   skip-cleanup: true
