@@ -11,6 +11,7 @@ addons:
     packages: [autoconf, automake, autotools-dev, bzip2, gcc-8, g++-8, libtool,libjpeg-dev, libtiff5-dev, libpng12-dev, libfreetype6-dev, libxml2-dev, libpango1.0-dev, libcairo2-dev, python3.7-dev, libbrotli-dev]
 
 install:
+  - sudo mkdir -p /usr/local/fforge/
   - export PREFIX=/usr/local/fforge/
   - export CC=gcc-8
   - export CXX=g++-8
@@ -25,16 +26,15 @@ install:
   - export CFLAGS="$CFLAGS -fdiagnostics-color=always -Wall -Wno-switch -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wrestrict -Wnull-dereference -Wjump-misses-init -Wdouble-promotion -Wshadow"
 
 script:
-  - sudo mkdir -p /usr/local/fforge/
   - git clone https://github.com/fontforge/fontforge.git
   - cd fontforge
   - ./bootstrap
   - ./configure
   - make
   - make check
-  - make install
+  - sudo make install
   - tar czf ../fforge.tar.gz fontforgeexe
-  - tar czf ../libs.tar.gz /usr/local/fforge/*
+  - tar czf ../libs.tar.gz /usr/local/fforge
 
 deploy:
   provider: pages
