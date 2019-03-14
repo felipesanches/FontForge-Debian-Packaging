@@ -8,10 +8,10 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
       - deadsnakes
-    packages: [autoconf, automake, autotools-dev, bzip2, gcc-8, g++-8, libtool,libjpeg-dev, libtiff5-dev, libpng12-dev, libfreetype6-dev, libxml2-dev, libpango1.0-dev, libcairo2-dev, python3.7-dev, libbrotli-dev]
+    packages: [autoconf, automake, autotools-dev, bzip2, gcc-8, g++-8, libtool,libjpeg-dev, libtiff5-dev, libpng12-dev, libfreetype6-dev, libxml2-dev, libpango1.0-dev, libcairo2-dev, python3.6-dev, libbrotli-dev]
 
 install:
-  - sudo mkdir -p $HOME/fforge_libs
+  - sudo mkdir -p $HOME/fforge_stuff
   - export PREFIX=/usr
   - export CC=gcc-8
   - export CXX=g++-8
@@ -21,7 +21,7 @@ install:
   - unset PYTHON_CFLAGS
 
     # These are FF-specific mods (set here so it runs also in Coverity)
-  - export PYTHON=python3.7
+  - export PYTHON=python3.6
   - export PYTHONPATH=$PYTHONPATH:$PREFIX/lib/python$($PYTHON -c "import sys; print('{0}.{1}'.format(sys.version_info.major, sys.version_info.minor))")/site-packages
   - export CFLAGS="$CFLAGS -fdiagnostics-color=always -Wall -Wno-switch -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wrestrict -Wnull-dereference -Wjump-misses-init -Wdouble-promotion -Wshadow"
 
@@ -29,12 +29,11 @@ script:
   - git clone https://github.com/fontforge/fontforge.git
   - cd fontforge
   - ./bootstrap
-  - ./configure --prefix=$HOME/fforge_libs
+  - ./configure --prefix=$HOME/fforge_stuff
   - make
   - make check
   - sudo make install
-  - tar czf ../fforge.tar.gz fontforgeexe
-  - tar czf ../libs.tar.gz $HOME/fforge_libs/*
+  - tar czf ../fforge_with_py36.tar.gz $HOME/fforge_stuff/*
 
 deploy:
   provider: pages
